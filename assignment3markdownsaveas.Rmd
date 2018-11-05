@@ -5,26 +5,121 @@ date: '2018-11-01'
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Question 2
+
+#reading the csv file
+
+```{r}
+rna_counts <- read.csv("eXpress_dm_counts.csv")
+str(rna_counts)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+checking for 0 values in rna_counts
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+which(rna_counts == 0)
 
-```{r cars}
-summary(cars)
+newrna_counts <- replace(rna_counts, rna_counts<1, 0.1)
+
+which(newrna_counts == 0)
+
+str(rna_counts)
+str(newrna_counts)
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
+mean(rna_counts$F101_lg_female_hdhorn)
+mean(newrna_counts$F101_lg_female_hdhorn)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+logoffemalehdhorns <- log(newrna_counts$F101_lg_female_hdhorn, 2)
+mean(logoffemalehdhorns)
+mean(log(newrna_counts$F101_lg_female_hdhorn, 2))
+length(logoffemalehdhorns)
+
+#simplyfying by taking out dataframe input
+# here replace newrna_counts with the dataframe of intrest
+
+mean_col <- function( col, log2 ) {
+  if (log2 == TRUE) {
+    logdfrm <- log( newrna_counts[2:56], 2)
+        mean( (logdfrm)[[ col ]] )
+    }
+  else { 
+    mean( (newrna_counts)[[ col ]] )
+    }
+}
+
+mean_col("F101_lg_female_hdhorn", FALSE)
+mean_col("F101_lg_female_hdhorn", TRUE)
+#
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## trying another column
+
+```{r}
+mean(newrna_counts$F101_lg_female_wings)
+logoffemalewings <- log(newrna_counts$F101_lg_female_wings, 2)
+mean(logoffemalewings)
+mean(log(newrna_counts$F101_lg_female_wings, 2))
+
+mean_col("F101_lg_female_wings", FALSE)
+
+mean_col("F101_lg_female_wings", TRUE)
+
+```
+
+## making a vector of means
+
+```{r}
+
+for (headername in newrna_counts[2:56]){
+  print(mean(headername))
+}
+
+means_vector <- colMeans(newrna_counts[2:56])
+class(means_vector)
+View(means_vector)
+mode(means_vector)
+#or can use apply watch video (https://www.youtube.com/watch?v=7sJ8r6Lb7-o)
+
+?colMeans
+```
+
+
+
+
+## draft work
+
+# coding (here more complex because I have to input dataframe when calling the function)
+
+mean_col <- function( dfrm, col, log2 ) {
+  if (log2 == TRUE) {
+    logdfrm <- log( dfrm[2:56], 2)
+        mean( get(logdfrm)[[ col ]] )
+    }
+  else { 
+    mean( get(dfrm)[[ col ]] )
+    }
+}
+
+mean_col("newrna_counts", "F101_lg_female_hdhorn", TRUE)
+#
+
+mean_col("newRna_counts", "F101_lg_female_hdhorn", TRUE)
+mean_col("newRna_counts", "F101_lg_female_hdhorn", FALSE)
+
+
+mean()
+mean(get(newRna_counts)[F101_lg_female_hdhorm])
+
+colMeans(rna_counts)
+
+mean_col <- function( dfrm, col ) mean( get(dfrm)[[ col ]] )
+
+mean_col("rna_counts", "F101_lg_female_hdhorn", log= TRUE)
+
+lognewrna_counts <- log( newrna_counts[2:56], 2)
