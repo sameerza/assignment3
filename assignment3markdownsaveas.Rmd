@@ -18,29 +18,30 @@ str(rna_counts)
 checking for 0 values in rna_counts
 
 ```{r}
-which(rna_counts == 0)
+#checking for values of 0 
+tail(which(rna_counts == 0, arr.ind=TRUE))
 
+#replacing 0 values with 0.1 
 newrna_counts <- replace(rna_counts, rna_counts<1, 0.1)
 
-which(newrna_counts == 0)
+#checking for values of 0 after replacement
+which(newrna_counts == 0, arr.ind=TRUE)
 
+#comparing the two data frames
 str(rna_counts)
 str(newrna_counts)
-
 ```
 
 ```{r}
-
+#checking if replacing the 0 with 0.1 affects the mean drastically (it does not)
 mean(rna_counts$F101_lg_female_hdhorn)
 mean(newrna_counts$F101_lg_female_hdhorn)
 
-logoffemalehdhorns <- log(newrna_counts$F101_lg_female_hdhorn, 2)
-mean(logoffemalehdhorns)
+#checking the mean using log2
 mean(log(newrna_counts$F101_lg_female_hdhorn, 2))
-length(logoffemalehdhorns)
 
-#simplyfying by taking out dataframe input
-# here replace newrna_counts with the dataframe of intrest
+# coding a function called mean_col that takes the arguments column name and log2=T 
+#note: the dataframe input is imbeded in the code and would need to be changed for the using with a different data frame
 
 mean_col <- function( col, log2 ) {
   if (log2 == TRUE) {
@@ -54,72 +55,99 @@ mean_col <- function( col, log2 ) {
 
 mean_col("F101_lg_female_hdhorn", FALSE)
 mean_col("F101_lg_female_hdhorn", TRUE)
-#
-
 ```
 
 ## trying another column
 
 ```{r}
 mean(newrna_counts$F101_lg_female_wings)
-logoffemalewings <- log(newrna_counts$F101_lg_female_wings, 2)
-mean(logoffemalewings)
+
 mean(log(newrna_counts$F101_lg_female_wings, 2))
 
 mean_col("F101_lg_female_wings", FALSE)
 
 mean_col("F101_lg_female_wings", TRUE)
 
+
 ```
 
-## making a vector of means
+## Question 3
+
+# making a vector of means
+
+```{r}
+column_means_vector <- NULL
+for(headernamesfor in names(newrna_counts[2:56])) {
+
+  
+  lalala <- c(headernamesfor)
+  lelele <- c(mean_col(headernamesfor, F))
+  names(lelele) <- lalala
+  column_means_vector <- c(column_means_vector, lelele)
+}
+
+column_means_vector
+
+#alternatively the R way of doing it is using colMeans
+means_vector <- colMeans(newrna_counts[2:56])
+means_vector
+plot(means_vector)
+```
+
+## Question 4
+mean_col_for_apply <- function( col, log2 ) {
+  if (log2 == TRUE) {
+    logdfrm <- log( newrna_counts[2:56], 2)
+        mean( (logdfrm)[[ col ]] )
+    }
+  else { 
+    mean( (newrna_counts)[[ col ]] )
+    }
+}
+
+```{r}
+lapply(X = newrna_counts, MARGIN = 2, FUN = mean)
+
+#headernames <- names(newrna_counts[2:56])
+#headernames
+#mean_col("headernames",F)
+#apply(headernames, FUN = mean_col(headernames,F))
+#lapply(X = newrna_counts, MARGIN = 2, FUN = mean_col(names(newrna_counts[2:56]),TRUE))
+#mean_col(names(newrna_counts[2:56]),TRUE)
+#names(newrna_counts)
+
+```
+
+## Question 5
+
+using colMeans as shown above
+
+## Question 6
+
+all about mean of rows
 
 ```{r}
 
-for (headername in newrna_counts[2:56]){
-  print(mean(headername))
-}
+tail(rowMeans(newrna_counts[,-1]))
+#or rowMeans(newrna_counts[,2:56])
 
-means_vector <- colMeans(newrna_counts[2:56])
-class(means_vector)
-View(means_vector)
-mode(means_vector)
-#or can use apply watch video (https://www.youtube.com/watch?v=7sJ8r6Lb7-o)
-
-?colMeans
+tail(row.names(newrna_counts))
 ```
 
+## Question 7
 
+```{r}
+mmale_hdhorn_grepped <- newrna_counts[, grepl("_male_hdhorn", names(newrna_counts))]
+rowMeans_mmale_hdhorn <- rowMeans(mmale_hdhorn_grepped)
 
+lg_male_hdhorn_grepped <- newrna_counts[, grepl("lg_male_hdhorn", names(newrna_counts))]
+rowMeans_lg_male_hdhorn <- rowMeans(lg_male_hdhorn_grepped)
 
-## draft work
+sm_male_hdhorn_grepped <- newrna_counts[, grepl("sm_male_hdhorn", names(newrna_counts))]
+rowMeans_sm_male_hdhorn <- rowMeans(sm_male_hdhorn_grepped)
 
-# coding (here more complex because I have to input dataframe when calling the function)
+hdhorn_diff <- rowMeans_lg_male_hdhorn - rowMeans_sm_male_hdhorn
+plot(rowMeans_mmale_hdhorn, hdhorn_diff)
 
-mean_col <- function( dfrm, col, log2 ) {
-  if (log2 == TRUE) {
-    logdfrm <- log( dfrm[2:56], 2)
-        mean( get(logdfrm)[[ col ]] )
-    }
-  else { 
-    mean( get(dfrm)[[ col ]] )
-    }
-}
+```
 
-mean_col("newrna_counts", "F101_lg_female_hdhorn", TRUE)
-#
-
-mean_col("newRna_counts", "F101_lg_female_hdhorn", TRUE)
-mean_col("newRna_counts", "F101_lg_female_hdhorn", FALSE)
-
-
-mean()
-mean(get(newRna_counts)[F101_lg_female_hdhorm])
-
-colMeans(rna_counts)
-
-mean_col <- function( dfrm, col ) mean( get(dfrm)[[ col ]] )
-
-mean_col("rna_counts", "F101_lg_female_hdhorn", log= TRUE)
-
-lognewrna_counts <- log( newrna_counts[2:56], 2)
