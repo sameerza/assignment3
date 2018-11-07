@@ -3,9 +3,8 @@ title: "assignment3markdown"
 author: "Zaid Sameer"
 date: '2018-11-01'
 output:
-  pdf_document: default
-  html_document: default
-  keep_md: true
+  output: md_document
+
 ---
 
 ## Question 2
